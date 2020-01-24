@@ -1,0 +1,134 @@
+# # import necessary modules
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import BayesianRidge
+from sklearn.metrics import mean_squared_error, r2_score
+import seaborn as sns
+sns.set(color_codes=True)
+
+
+# define a file to save the coefficients
+coefs_results = open('coefs_results.csv','w')
+coefs_results.write("Results of coefficients\n")
+
+# define a file to save the R2
+score_r2 = open('score_r2.csv','w')
+score_r2.write("Results of the coefficient of determination\n")
+
+# define a file to save the mean squared error
+m_s_e = open('mse.csv','w')
+m_s_e.write("Results of the mean squared error\n")
+
+# define a file to save the intercept
+intercept = open('intercept.csv','w')
+intercept.write("Results of the intercept\n")
+
+
+# define a file to save precision of the noise
+alpha = open('alpha.csv','w')
+alpha.write("Results of the alpha\n")
+
+# define a file to save estimated precision of the weights
+lambd = open('lambda.csv','w')
+lambd.write("Results of the lambda\n")
+
+#load the data
+path = 'path to the file.csv'
+data = pd.read_csv(path)
+print(data.shape)
+
+#print(data.head())
+
+# split the data into features and target
+Xs  = data.drop(['sales'], axis = 1)
+Y = data['sales']
+
+sns.distplot(Y);
+plt.title('Distribution of age', fontsize=12)
+plt.xlabel('Age')
+plt.ylabel('Frequencies')
+plt.savefig('books_read.png')
+plt.show()
+
+'''
+# another kind of plot 
+plt.hist(Y, bins = 14)
+plt.xlabel('Grade')
+plt.ylabel('Count')
+plt.title('Distribution of Final Grades')
+plt.savefig('books_read.png')
+plt.show()
+'''
+
+n_feature = Xs.shape[1]
+print (n_feature)
+
+#define number of folds
+cv = 10
+kf = KFold(n_splits=cv)
+
+
+mse, coefs, score, interc, alfa, lam = [], [], [], [], [], []
+
+for train, test in kf.split(Xs, Y):
+    #print sentnce for each file
+    coefs_results.write('Coefficients for fold :'+str(cv)+"\n")
+    score_r2.write('R2 for fold :'+str(cv)+"\t")
+    m_s_e.write("The mean squared error for fold :"+str(cv)+"\t")
+    intercept.write("The intercept for fold :"+str(cv)+"\t")
+    alpha.write("The estimated precision of the noise for fold :"+str(cv)+"\t")
+    lambd.write("The estimated precision of the weights for fold :"+str(cv)+"\t")
+    
+    
+    # define the model
+    clf = BayesianRidge(n_iter = 500, verbose = True)
+    
+    # fit the data to the model
+    clf.fit(Xs.loc[train], Y.loc[train])
+    
+    # calculate R2 for each fold and save the value into a file
+    score.append(clf.score(Xs.loc[train], Y.loc[train]))
+    score_r2.write(str(clf.score(Xs.loc[train], Y.loc[train]))+"\n")
+    
+    # predict new values
+    ypred = clf.predict(Xs.loc[test])
+    
+    # calculate mean squared error for each fold and save into a file
+    mse.append(mean_squared_error(Y.loc[test], ypred))
+    m_s_e.write(str(mean_squared_error(Y.loc[test], ypred))+"\n")
+    
+    # calculate intercept for each fold and save them into a file
+    interc.append(clf.intercept_)
+    intercept.write(str(clf.intercept_)+"\n")
+    
+    # calclate estimated precision of the noise for each fold and save them into a file
+    alfa.append(clf.alpha_)
+    alpha.write(str(clf.alpha_)+"\n")
+    
+    # calculate estimated precision of the weights for each fold and save them into a file
+    lam.append(clf.lambda_)
+    lambd.write(str(clf.lambda_)+"\n")
+    
+    # print Coefficient word into a file
+    for i in range(n_feature):
+        coefs_results.write('Coefficient :'+str(i+1))
+        coefs_results.write("\t")
+    coefs_results.write("\n")
+    
+    # calculate Coefficient values for each fold and save them into a file
+    for n in range(n_feature):
+        coefs.append(clf.coef_[n])
+        coefs_results.write(str(clf.coef_[n]))
+        coefs_results.write("\t")
+    cv = cv-1
+    coefs_results.write("\n")
+        
+
+
+print (interc)
+print(alfa)
+print(lam)
