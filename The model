@@ -50,16 +50,16 @@ sns.distplot(Y);
 plt.title('Distribution of age', fontsize=12)
 plt.xlabel('Age')
 plt.ylabel('Frequencies')
-plt.savefig('books_read.png')
+plt.savefig('dofage.png')
 plt.show()
 
 '''
 # another kind of plot 
 plt.hist(Y, bins = 14)
-plt.xlabel('Grade')
-plt.ylabel('Count')
-plt.title('Distribution of Final Grades')
-plt.savefig('books_read.png')
+plt.xlabel('Age')
+plt.ylabel('Frequencies')
+plt.title('Distribution of Age')
+plt.savefig('dofage.png')
 plt.show()
 '''
 
