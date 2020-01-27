@@ -36,7 +36,7 @@ lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
 #load the data
-path = 'data.csv'
+path = '/home/amaa11/Desktop/backup/home/amaa11/Desktop/PhD_things/Uk Biobank/Bayesin_test/the_model/a.csv'
 data = pd.read_csv(path)
 print(data.shape)
 
@@ -118,7 +118,7 @@ for train, test in kf.split(Xs, Y):
     
     # print Coefficient word into a file
     for i in range(n_feature):
-        coefs_results.write('Coefficient :'+str(i+1))
+        coefs_results.write('Coefficient '+str(i+1)+' for the feature '+str(data.columns[i]))
         coefs_results.write("\t")
     coefs_results.write("\n")
     
