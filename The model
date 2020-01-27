@@ -85,36 +85,36 @@ for train, test in kf.split(Xs, Y):
     
     
     # define the model
-    clf = BayesianRidge(n_iter = 500, verbose = True, tol=0.001)
+    Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.001)
     
     # fit the data to the model
-    clf.fit(Xs.loc[train], Y.loc[train])
+    Breg.fit(Xs.loc[train], Y.loc[train])
     
     # calculate R2 for each fold and save the value into a file
-    score.append(clf.score(Xs.loc[train], Y.loc[train]))
-    score_r2.write(str(clf.score(Xs.loc[train], Y.loc[train]))+"\n")
+    score.append(Breg.score(Xs.loc[train], Y.loc[train]))
+    score_r2.write(str(Breg.score(Xs.loc[train], Y.loc[train]))+"\n")
     
     # predict new values
-    ypred = clf.predict(Xs.loc[test])
+    ypred = Breg.predict(Xs.loc[test])
     
     # calculate mean squared error for each fold and save into a file
     mse.append(mean_squared_error(Y.loc[test], ypred))
     m_s_e.write(str(mean_squared_error(Y.loc[test], ypred))+"\n")
     
     # calculate intercept for each fold and save them into a file
-    interc.append(clf.intercept_)
-    intercept.write(str(clf.intercept_)+"\n")
+    interc.append(Breg.intercept_)
+    intercept.write(str(Breg.intercept_)+"\n")
     
     # calclate estimated precision of the noise for each fold and save them into a file
-    alfa.append(clf.alpha_)
-    alpha.write(str(clf.alpha_)+"\n")
+    alfa.append(Breg.alpha_)
+    alpha.write(str(Breg.alpha_)+"\n")
     
     # calculate estimated precision of the weights for each fold and save them into a file
-    lam.append(clf.lambda_)
-    lambd.write(str(clf.lambda_)+"\n")
+    lam.append(Breg.lambda_)
+    lambd.write(str(Breg.lambda_)+"\n")
     
     # save the number of iteration till w convergted
-    iteration.append(clf.n_iter)
+    iteration.append(Breg.n_iter)
     
     # print Coefficient word into a file
     for i in range(n_feature):
@@ -124,8 +124,8 @@ for train, test in kf.split(Xs, Y):
     
     # calculate Coefficient values for each fold and save them into a file
     for n in range(n_feature):
-        coefs.append(clf.coef_[n])
-        coefs_results.write(str(clf.coef_[n]))
+        coefs.append(Breg.coef_[n])
+        coefs_results.write(str(Breg.coef_[n]))
         coefs_results.write("\t")
     cv = cv-1
     coefs_results.write("\n")
