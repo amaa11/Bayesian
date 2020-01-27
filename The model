@@ -36,7 +36,7 @@ lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
 #load the data
-path = '/home/amaa11/Desktop/backup/home/amaa11/Desktop/PhD_things/Uk Biobank/Bayesin_test/the_model/a.csv'
+path = 'data.csv'
 data = pd.read_csv(path)
 print(data.shape)
 
