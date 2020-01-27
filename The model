@@ -1,12 +1,11 @@
-# # import necessary modules
+# import necessary modules
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import BayesianRidge
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error
 import seaborn as sns
 sns.set(color_codes=True)
 
@@ -37,7 +36,7 @@ lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
 #load the data
-path = 'path to the file.csv'
+path = '/home/amaa11/Desktop/backup/home/amaa11/Desktop/PhD_things/Uk Biobank/Bayesin_test/the_model/a.csv'
 data = pd.read_csv(path)
 print(data.shape)
 
@@ -72,7 +71,8 @@ cv = 10
 kf = KFold(n_splits=cv)
 
 
-mse, coefs, score, interc, alfa, lam = [], [], [], [], [], []
+# define some arrays if we want to print the results on the screen
+mse, coefs, score, interc, alfa, lam, iteration = [], [], [], [], [], [], []
 
 for train, test in kf.split(Xs, Y):
     #print sentnce for each file
@@ -85,7 +85,7 @@ for train, test in kf.split(Xs, Y):
     
     
     # define the model
-    clf = BayesianRidge(n_iter = 500, verbose = True)
+    clf = BayesianRidge(n_iter = 500, verbose = True, tol=0.001)
     
     # fit the data to the model
     clf.fit(Xs.loc[train], Y.loc[train])
@@ -113,6 +113,9 @@ for train, test in kf.split(Xs, Y):
     lam.append(clf.lambda_)
     lambd.write(str(clf.lambda_)+"\n")
     
+    # save the number of iteration till w convergted
+    iteration.append(clf.n_iter)
+    
     # print Coefficient word into a file
     for i in range(n_feature):
         coefs_results.write('Coefficient :'+str(i+1))
@@ -126,9 +129,14 @@ for train, test in kf.split(Xs, Y):
         coefs_results.write("\t")
     cv = cv-1
     coefs_results.write("\n")
-        
 
-
+'''
+# print results on the screen      
+print(mse)
+print(coefs)
+print(score)
 print (interc)
 print(alfa)
 print(lam)
+print(iteration)
+'''
