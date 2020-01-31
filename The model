@@ -46,7 +46,7 @@ print(data.shape)
 
 # check if there is missing values and save the summary in a file
 null_values = open('null_values.csv','w')
-null_values.write("Summary of null values for each feature\n")
+null_values.write("Summary of null values for all features\n")
 null_values.write(str(data.isnull().sum().sum()))
 
 
