@@ -38,7 +38,7 @@ lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
 #load the data
-path = './IDPs.csv'
+path = '/home/amaa11/Desktop/Uk_Biobank_data/ahmed/features/all_IDPs/IDPs.csv'
 data = pd.read_csv(path, sep=' ')
 print(data.shape)
 
@@ -110,13 +110,15 @@ for train, test in kf.split(Xs, Y):
     
     
     # define the model
-    Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.0000001)
+    Breg = BayesianRidge(alpha_1 = 40, lambda_1=70, n_iter = 500, verbose = True, tol=0.0000001)
     
     # fit the data to the model
     Breg.fit(Xs[train], Y[train])
     
     # calculate R2 for each fold and save the value into a file
     score.append(Breg.score(Xs[train], Y[train]))
+    print("R2: ", '%.8f' % Breg.score(Xs[train], Y[train]))
+    
     score_r2.write(str(Breg.score(Xs[train], Y[train]))+"\n")
     
     # predict new values
@@ -124,6 +126,7 @@ for train, test in kf.split(Xs, Y):
     
     # calculate mean squared error for each fold and save into a file
     mse.append(mean_squared_error(Y[test], ypred))
+    print("Mean Squared Error: ", '%.8f' % mean_squared_error(Y[test], ypred))
     m_s_e.write(str(mean_squared_error(Y[test], ypred))+"\n")
     
     # calculate intercept for each fold and save them into a file
