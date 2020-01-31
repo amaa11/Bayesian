@@ -110,7 +110,7 @@ for train, test in kf.split(Xs, Y):
     
     
     # define the model
-    Breg = BayesianRidge(alpha_1 = 40, lambda_1=70, n_iter = 500, verbose = True, tol=0.0000001)
+    Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.0000001)
     
     # fit the data to the model
     Breg.fit(Xs[train], Y[train])
