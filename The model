@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 from sklearn.linear_model import BayesianRidge
 from sklearn.metrics import mean_squared_error
+from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
 import seaborn as sns
 sns.set(color_codes=True)
 
@@ -36,17 +38,28 @@ lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
 #load the data
-path = 'data.csv'
-data = pd.read_csv(path)
+path = './IDPs.csv'
+data = pd.read_csv(path, sep=' ')
 print(data.shape)
 
 #print(data.head())
 
-# split the data into features and target
-Xs  = data.drop(['sales'], axis = 1)
-Y = data['sales']
+# check if there is missing values and save the summary in a file
+null_values = open('null_values.csv','w')
+null_values.write("Summary of null values for each feature\n")
+null_values.write(str(data.isnull().sum().sum()))
 
-sns.distplot(Y);
+
+# split the data into features and target. x_raw is the features and y_raw is the target
+x_raw = data.drop(['f.eid','f.21003.0.0'] , axis = 1)
+
+print (x_raw.shape)
+y_raw = data['f.21003.0.0']
+print(y_raw.shape)
+
+
+# plot the distribution of the target (Age)
+sns.distplot(y_raw);
 plt.title('Distribution of age', fontsize=12)
 plt.xlabel('Age')
 plt.ylabel('Frequencies')
@@ -62,6 +75,18 @@ plt.title('Distribution of Age')
 plt.savefig('dofage.png')
 plt.show()
 '''
+
+
+# features preprocessing
+x_norm= preprocessing.normalize(x_raw)
+std = StandardScaler()
+Xs = std.fit_transform(x_norm)
+
+# target preprocessing
+y_raw = y_raw.values.reshape(1, -1) 
+Y= preprocessing.normalize(y_raw)
+Y = Y.ravel()
+print(Y.shape)
 
 n_feature = Xs.shape[1]
 print (n_feature)
@@ -85,21 +110,21 @@ for train, test in kf.split(Xs, Y):
     
     
     # define the model
-    Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.001)
+    Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.0000001)
     
     # fit the data to the model
-    Breg.fit(Xs.loc[train], Y.loc[train])
+    Breg.fit(Xs[train], Y[train])
     
     # calculate R2 for each fold and save the value into a file
-    score.append(Breg.score(Xs.loc[train], Y.loc[train]))
-    score_r2.write(str(Breg.score(Xs.loc[train], Y.loc[train]))+"\n")
+    score.append(Breg.score(Xs[train], Y[train]))
+    score_r2.write(str(Breg.score(Xs[train], Y[train]))+"\n")
     
     # predict new values
-    ypred = Breg.predict(Xs.loc[test])
+    ypred = Breg.predict(Xs[test])
     
     # calculate mean squared error for each fold and save into a file
-    mse.append(mean_squared_error(Y.loc[test], ypred))
-    m_s_e.write(str(mean_squared_error(Y.loc[test], ypred))+"\n")
+    mse.append(mean_squared_error(Y[test], ypred))
+    m_s_e.write(str(mean_squared_error(Y[test], ypred))+"\n")
     
     # calculate intercept for each fold and save them into a file
     interc.append(Breg.intercept_)
@@ -118,7 +143,7 @@ for train, test in kf.split(Xs, Y):
     
     # print Coefficient word into a file
     for i in range(n_feature):
-        coefs_results.write('Coefficient '+str(i+1)+' for the feature '+str(data.columns[i]))
+        coefs_results.write('Coefficient '+str(i+1)+' for the feature '+str(data.columns[i+1]))
         coefs_results.write("\t")
     coefs_results.write("\n")
     
