@@ -100,7 +100,7 @@ kf = KFold(n_splits=cv)
 mse, coefs, score, interc, alfa, lam, iteration = [], [], [], [], [], [], []
 
 for train, test in kf.split(Xs, Y):
-    #print sentnce for each file
+    #Write explanation sentence for each file to understand the results
     coefs_results.write('Coefficients for fold :'+str(cv)+"\n")
     score_r2.write('R2 for fold :'+str(cv)+"\t")
     m_s_e.write("The mean squared error for fold :"+str(cv)+"\t")
