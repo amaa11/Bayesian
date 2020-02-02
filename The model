@@ -116,7 +116,7 @@ for train, test in kf.split(Xs, Y):
     Breg.fit(Xs[train], Y[train])
     
     # calculate R2 for each fold and save the value into a file
-    score.append(Breg.score(Xs[train], Y[train]))
+    score.append(Breg.score(Xs[test], Y[test]))
     print("R2 for fold "+str(cv)+": " '%.8f' % Breg.score(Xs[train], Y[train]))
     
     score_r2.write(str(Breg.score(Xs[train], Y[train]))+"\n")
