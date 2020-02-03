@@ -119,7 +119,7 @@ for train, test in kf.split(Xs, Y):
     score.append(Breg.score(Xs[test], Y[test]))
     print("R2 for fold "+str(cv)+": " '%.8f' % Breg.score(Xs[train], Y[train]))
     
-    score_r2.write(str(Breg.score(Xs[train], Y[train]))+"\n")
+    score_r2.write(str(Breg.score(Xs[test], Y[test]))+"\n")
     
     # predict new values
     ypred = Breg.predict(Xs[test])
