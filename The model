@@ -37,10 +37,14 @@ alpha.write("Results of the alpha\n")
 lambd = open('lambda.csv','w')
 lambd.write("Results of the lambda\n")
 
+#define file to save predicted age and actual age
+y_pred = open('y_pred.csv', 'w')
+y_pred.write("Results of predicted and actual age\n")
+
 #load the data
-path = './IDPs.csv'
+path = './IDPs.tab'
 data = pd.read_csv(path, sep=' ')
-print(data.shape)
+print("Shape of the data: ",data.shape)
 
 #print(data.head())
 
@@ -49,50 +53,32 @@ null_values = open('null_values.csv','w')
 null_values.write("Summary of null values for all features\n")
 null_values.write(str(data.isnull().sum().sum()))
 
-
 # split the data into features and target. x_raw is the features and y_raw is the target
 x_raw = data.drop(['f.eid','f.21003.0.0'] , axis = 1)
-
-print (x_raw.shape)
 y_raw = data['f.21003.0.0']
-print(y_raw.shape)
 
-
-# plot the distribution of the target (Age)
-sns.distplot(y_raw);
-plt.title('Distribution of age', fontsize=12)
-plt.xlabel('Age')
-plt.ylabel('Frequencies')
-plt.savefig('dofage.png')
-plt.show()
-
-'''
-# another kind of plot 
-plt.hist(Y, bins = 14)
+# plot the distribution of the target (Age) 
+plt.hist(y_raw, bins = 14)
 plt.xlabel('Age')
 plt.ylabel('Frequencies')
 plt.title('Distribution of Age')
 plt.savefig('dofage.png')
 plt.show()
-'''
-
 
 # features preprocessing
 x_norm= preprocessing.normalize(x_raw)
 std = StandardScaler()
 Xs = std.fit_transform(x_norm)
-
+print("Shape of the features: ", Xs.shape)
 # target preprocessing
 y_raw = y_raw.values.reshape(1, -1) 
 Y= preprocessing.normalize(y_raw)
 Y = Y.ravel()
-print(Y.shape)
-
-n_feature = Xs.shape[1]
-print (n_feature)
+print("Shape of the target: ",Y.shape)
 
 #define number of folds
 cv = 10
+n_feature = Xs.shape[1]
 kf = KFold(n_splits=cv)
 
 
@@ -107,7 +93,7 @@ for train, test in kf.split(Xs, Y):
     intercept.write("The intercept for fold :"+str(cv)+"\t")
     alpha.write("The estimated precision of the noise for fold :"+str(cv)+"\t")
     lambd.write("The estimated precision of the weights for fold :"+str(cv)+"\t")
-    
+    y_pred.write("The predicted age for fold :"+str(cv)+"\t"+"The actual age for same fold\n")
     
     # define the model
     Breg = BayesianRidge(n_iter = 500, verbose = True, tol=0.0000001)
@@ -123,6 +109,10 @@ for train, test in kf.split(Xs, Y):
     
     # predict new values
     ypred = Breg.predict(Xs[test])
+    
+    for i in range(len(ypred)):
+        y_pred.write(str(ypred[i])+"\t")
+        y_pred.write(str(Y[test[i]])+"\n")
     
     # calculate mean squared error for each fold and save into a file
     mse.append(mean_squared_error(Y[test], ypred))
